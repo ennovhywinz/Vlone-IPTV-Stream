@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VLONE IPTV</title>
+    <link rel="icon" type="image/png" href="https://i.imgur.com/ZrYMYLQ.png">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.3.5/shaka-player.compiled.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.4.0/hls.min.js"></script>
+	<link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1><i>vlone iptv.</i></h1>
+    <div id="video-container">
+        <video id="video-player" controls autoplay></video>
+    </div>
+
+    <div id="channel-selector"></div>
+
+    <div class="navigation-buttons">
+        <button class="navigation-button" id="prev-page">🡸</button>
+        <button class="navigation-button" id="next-page">🡺</button>
+    </div>
+	
+	<script>        
+	const channelData = [
+            { src: "http://103.84.177.18:48090/live/tvnijuan2025/tvnijuan2025/2.m3u8", img: "https://i.imgur.com/POt9KB8.png", name: "KAPAMILYA CHANNEL" },
+            { src: "http://103.84.177.18:48090/live/tvnijuan2025/tvnijuan2025/1.m3u8", img: "https://i.imgur.com/qgy7oAa.png", name: "GMA" },
+            { src: "http://103.84.177.18:48090/live/tvnijuan2025/tvnijuan2025/1363.m3u8", img: "https://i.imgur.com/yMK7Fd5.png", name: "GTV" },
+            { src: "http://103.84.177.18:48090/live/tvnijuan2025/tvnijuan2025/1361.m3u8", img: "https://i.imgur.com/jsCBRq0.pngbtiNwYt.png", name: "TV5" },
+            { src: "http://103.84.177.18:48090/live/tvnijuan2025/tvnijuan2025/3360.m3u8", img: "https://i.imgur.com/btiNwYt.png", name: "ONE SPORTS" },
+            {
+                src: "https://qp-pldt-live-grp-02-prod.akamaized.net/out/u/cg_ptv4_sd.mpd",
+                img: "https://i.imgur.com/plyCuAw.png",
+                name: "PTV",
+                key: "71a130a851b9484bb47141c8966fb4a3:ad1f003b4f0b31b75ea4593844435600"
+            },            
+			{
+                src: "https://qp-pldt-live-grp-04-prod.akamaized.net/out/u/onenews_hd1.mpd",
+                img: "https://i.imgur.com/bmP06bk.png",
+                name: "ONE NEWS",
+                key: "d39eb201ae494a0b98583df4d110e8dd:6797066880d344422abd3f5eda41f45f"
+            },            
+			{
+                src: "https://qp-pldt-live-grp-04-prod.akamaized.net/out/u/oneph_sd.mpd",
+                img: "https://i.imgur.com/9dMuFE1.png",
+                name: "ONE PH",
+                key: "92834ab4a7e1499b90886c5d49220e46:a7108d9a6cfcc1b7939eb111daf09ab3"
+            },
+            { src: "http://103.84.177.18:48090/live/tvnijuan2025/tvnijuan2025/1364.m3u8", img: "https://brandlogo.org/wp-content/uploads/2024/05/All-TV-Logo-300x300.png.webp", name: "ALL TV" },           
+			{
+                src: "https://qp-pldt-live-grp-02-prod.akamaized.net/out/u/cg_a2z.mpd",
+                img: "https://i.imgur.com/3myn4zH.png",
+                name: "A2Z",
+                key: "f703e4c8ec9041eeb5028ab4248fa094:c22f2162e176eee6273a5d0b68d19530"
+            },
+            { src: "http://103.84.177.18:48090/live/tvnijuan2025/tvnijuan2025/1368.m3u8", img: "https://static.wikia.nocookie.net/russel/images/4/4c/ANC_Logo_2015.png", name: "ANC" },
+            { src: "http://103.84.177.18:48090/live/tvnijuan2025/tvnijuan2025/1367.m3u8", img: "https://upload.wikimedia.org/wikipedia/en/thumb/2/2e/TeleRadyo_Serbisyo_logo.svg/500px-TeleRadyo_Serbisyo_logo.svg.png", name: "TELERADYO SERBISYO" },            
+			{
+                src: "https://qp-pldt-live-grp-07-prod.akamaized.net/out/u/ibc13_sd.mpd",
+                img: "https://i.imgur.com/Org4yTu.png",
+                name: "IBC",
+                key: "04e292bc99bd4ccba89e778651914254:ff0a62bdf8920ce453fe680330b563a5"
+            },            
+			{
+                src: "https://qp-pldt-live-grp-03-prod.akamaized.net/out/u/cnn_rptv_prod_hd.mpd",
+                img: "https://i.imgur.com/IDCHfXm.png",
+                name: "RPTV",
+                key: "1917f4caf2364e6d9b1507326a85ead6:a1340a251a5aa63a9b0ea5d9d7f67595"
+            },            
+			{
+                src: "https://qp-pldt-live-grp-05-prod.akamaized.net/out/u/bilyonaryoch.mpd",
+                img: "https://i.imgur.com/Z5ZyJ8c.png",
+                name: "BILYONARYO CHANNEL",
+                key: "227ffaf09bec4a889e0e0988704d52a2:b2d0dce5c486891997c1c92ddaca2cd2"
+            },
+            { src: "https://jungotvstream-chanall.akamaized.net/jungotv/jungopinoytv/stream.m3u8", img: "https://i.imgur.com/FjAjdL0.png", name: "JUNGO PINOY TV" },
+            { src: "https://jungotvstream-chanall.akamaized.net/jungotv/hallypop/stream.m3u8", img: "https://i.imgur.com/TT27L6j.png", name: "HALLYPOP" },
+            {
+                src: "https://qp-pldt-live-grp-06-prod.akamaized.net/out/u/cg_sari_sari_sd.mpd",
+                img: "https://i.imgur.com/MXxN1UO.png",
+                name: "SARI-SARI",
+                key: "0a7ab3612f434335aa6e895016d8cd2d:b21654621230ae21714a5cab52daeb9d"
+            },            
+			{
+                src: "https://qp-pldt-live-grp-06-prod.akamaized.net/out/u/cg_buko_sd.mpd",
+                img: "https://i.imgur.com/Du6LQCi.png",
+                name: "BUKO CHANNEL",
+                key: "d273c085f2ab4a248e7bfc375229007d:7932354c3a84f7fc1b80efa6bcea0615"
+            },
+            { src: "http://103.84.177.18:48090/live/tvnijuan2025/tvnijuan2025/3338.m3u8", img: "https://i.imgur.com/7f0CxjO.png", name: "SOLARFLIX" },  
+			{
+                src: "https://qp-pldt-live-grp-07-prod.akamaized.net/out/u/cg_tvnmovie.mpd",
+                img: "https://i.imgur.com/9fKNEHY.png",
+                name: "TVN MOVIES PINOY",
+                key: "2e53f8d8a5e94bca8f9a1e16ce67df33:3471b2464b5c7b033a03bb8307d9fa35"
+            },
+            { src: "https://cinemaone-abscbn-ono.amagi.tv/index.m3u8", img: "https://i.imgur.com/moSPpuJ.png", name: "CINEMA ONE" },
+            { src: "https://cinemo-abscbn-ono.amagi.tv/playlist.m3u8", img: "https://i.imgur.com/2Jn7QHG.png", name: "CINEMO" },
+            { src: "https://ythls.armelin.one/channel/UCcTiBX8js_djhSSlmJRI99A.m3u8", img: "https://i.imgur.com/P1mCl2k.png", name: "DZRH" },            
+			{
+                src: "https://qp-pldt-live-grp-09-prod.akamaized.net/out/u/cg_mptv.mpd",
+                img: "https://i.imgur.com/BMCnoRn.png",
+                name: "MEDIA PILIPINAS TV",
+                key: "6aab8f40536f4ea98e7c97b8f3aa7d4e:139aa5a55ade471faaddacc4f4de8807"
+            },            
+			{
+                src: "https://qp-pldt-live-grp-04-prod.akamaized.net/out/u/pbo_sd.mpd",
+                img: "https://i.imgur.com/709Uy7N.png",
+                name: "PBO",
+                key: "dcbdaaa6662d4188bdf97f9f0ca5e830:31e752b441bd2972f2b98a4b1bc1c7a1"
+            },            
+			{
+                src: "https://qp-pldt-live-grp-06-prod.akamaized.net/out/u/viva_sd.mpd",
+                img: "https://i.imgur.com/51RWtvd.png",
+                name: "VIVA CINEMA",
+                key: "07aa813bf2c147748046edd930f7736e:3bd6688b8b44e96201e753224adfc8fb"
+            },
+            { src: "https://jungotvstream-chanall.akamaized.net/jungotv/screamflix/stream.m3u8", img: "https://i.imgur.com/mZexD6Z.png", name: "SCREAMFLIX" },
+            { src: "http://103.84.177.18:48090/live/tvnijuan2025/tvnijuan2025/3375.m3u8", img: "https://i.imgur.com/UIqEr2y.png", name: "KNOWLEDGE CHANNEL" },
+            { src: "http://103.84.177.18:48090/live/tvnijuan2025/tvnijuan2025/5187.m3u8", img: "https://i.imgur.com/CIPTNnT.png", name: "MYX" },            
+			{
+                src: "https://qp-pldt-live-grp-01-prod.akamaized.net/out/u/cg_pbarush_hd1.mpd",
+                img: "https://i.imgur.com/J4QCDLG.png",
+                name: "PBA RUSH",
+                key: "76dc29dd87a244aeab9e8b7c5da1e5f3:95b2f2ffd4e14073620506213b62ac82"
+            },            
+			{
+                src: "https://qp-pldt-live-grp-03-prod.akamaized.net/out/u/cg_onesportsplus_hd1.mpd",
+                img: "https://i.imgur.com/nFLt8cN.png",
+                name: "ONE SPORTS PLUS",
+                key: "322d06e9326f4753a7ec0908030c13d8:1e3e0ca32d421fbfec86feced0efefda"
+            },            
+			{
+                src: "https://qp-pldt-live-grp-04-prod.akamaized.net/out/u/cg_uaap_cplay_sd.mpd",
+                img: "https://i.imgur.com/rifinVV.png",
+                name: "UAAP VARSITY CHANNEL",
+                key: "95588338ee37423e99358a6d431324b9:6e0f50a12f36599a55073868f814e81e"
+            },
+            { src: "http://103.84.177.18:48090/live/tvnijuan2025/tvnijuan2025/3359.m3u8", img: "https://i.imgur.com/77O25Vz.png", name: "SOLAR SPORTS" },
+            { src: "http://103.84.177.18:48090/live/tvnijuan2025/tvnijuan2025/5428.m3u8", img: "https://i.imgur.com/EUlYIWv.png", name: "CELESTIAL MOVIES PINOY" },
+            { src: "http://103.84.177.18:48090/live/tvnijuan2025/tvnijuan2025/3336.m3u8", img: "https://i.imgur.com/6mNCite.png", name: "TMC" },
+            { src: "http://103.84.177.18:48090/live/tvnijuan2025/tvnijuan2025/3332.m3u8", img: "https://1000logos.net/wp-content/uploads/2023/01/Al-Jazeera-Logo.png", name: "AL JAZEERA" },
+            { src: "http://fl2.moveonjoy.com/CNN_INTERNATIONAL/index.m3u8", img: "https://static.epg.best/au/CNN.au.png", name: "CNN" },
+            { src: "http://fl2.moveonjoy.com/BLOOMBERG/index.m3u8", img: "https://i.imgur.com/pl4w2NN.png", name: "BLOOMBERG" },
+            { src: "https://d2vnbkvjbims7j.cloudfront.net/containerA/LTN/playlist.m3u8", img: "https://i.imgur.com/ASuVFay.png", name: "BBC NEWS" },
+            { src: "https://cdn09jtedge.indihometv.com/joss/134/euronews/index.m3u8", img: "https://i.imgur.com/3262tTo.png", name: "EURONEWS" },
+            { src: "https://1a-1791.com/live/hr6yv36f/slot-4/mxtm-wdfe_360p/chunklist_DVR.m3u8", img: "https://i.imgur.com/SE4ZoBV.png", name: "RUSSIA TODAY" },
+            { src: "https://linear417-gb-hls1-prd-ak.cdn.skycdp.com/100e/Content/HLS_001_1080_30/Live/channel(skynews)/index_1080-30.m3u8", img: "https://i.imgur.com/8p0dh0V.png", name: "SKY NEWS" },
+            { src: "https://cdn09jtedge.indihometv.com/joss/134/cnbcasia/index.m3u8", img: "https://i.imgur.com/foW8GA2.png", name: "CNBC" }
+        ];
+
+        const pageSize = 12;
+        let currentPage = 0;
+        let activeTile = null;
+        let activeTileIndex = null;
+
+        function loadTiles(page) {
+            const start = page * pageSize;
+            const end = start + pageSize;
+            const tiles = channelData.slice(start, end);
+            const selector = document.getElementById('channel-selector');
+            selector.innerHTML = '';
+            tiles.forEach((channel, index) => {
+                const tile = document.createElement('div');
+                tile.classList.add('tile');
+                tile.setAttribute('data-source', channel.src);
+                if (channel.key) tile.setAttribute('data-key', channel.key);
+                tile.innerHTML = `
+                    <img src="${channel.img}" alt="${channel.name}">
+                    <span>${channel.name}</span>
+                `;
+                selector.appendChild(tile);
+
+                if (activeTileIndex !== null && start + index === activeTileIndex) {
+                    updateActiveTile(tile);
+                }
+            });
+        }
+
+        function updateActiveTile(tile) {
+            if (activeTile) {
+                activeTile.classList.remove('active');
+            }
+            tile.classList.add('active');
+            activeTile = tile;
+        }
+
+        document.getElementById('prev-page').addEventListener('click', () => {
+            if (currentPage > 0) {
+                currentPage--;
+                loadTiles(currentPage);
+            }
+        });
+
+        document.getElementById('next-page').addEventListener('click', () => {
+            if (currentPage < Math.ceil(channelData.length / pageSize) - 1) {
+                currentPage++;
+                loadTiles(currentPage);
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const video = document.getElementById('video-player');
+            const player = new shaka.Player(video);
+
+            async function loadVideo(manifestUri, keySystem = null) {
+                const isHLS = manifestUri.endsWith('.m3u8');
+                if (isHLS && Hls.isSupported()) {
+                    const hls = new Hls();
+                    hls.loadSource(manifestUri);
+                    hls.attachMedia(video);
+                } else {
+                    const config = keySystem ? { drm: { clearKeys: parseClearKey(keySystem) } } : {};
+                    player.configure(config);
+                    await player.load(manifestUri);
+                }
+                video.play();
+            }
+
+            function parseClearKey(keyString) {
+                const keys = keyString.split(',');
+                const keyObject = {};
+                keys.forEach(pair => {
+                    const [keyId, key] = pair.split(':');
+                    keyObject[keyId] = key;
+                });
+                return keyObject;
+            }
+
+            document.getElementById('channel-selector').addEventListener('click', function(event) {
+                const tile = event.target.closest('.tile');
+                if (tile) {
+                    const source = tile.getAttribute('data-source');
+                    const key = tile.getAttribute('data-key') || null;
+                    loadVideo(source, key);
+                    updateActiveTile(tile);
+                }
+            });        
+			
+            document.addEventListener('contextmenu', (e) => e.preventDefault());
+
+            function ctrlShiftKey(e, keyCode) {
+              return e.ctrlKey && e.shiftKey && e.keyCode === keyCode.charCodeAt(0);
+            }
+
+            document.onkeydown = (e) => {
+            if (
+              event.keyCode === 123 ||
+              ctrlShiftKey(e, 'I') ||
+              ctrlShiftKey(e, 'J') ||
+              ctrlShiftKey(e, 'C') ||
+              (e.ctrlKey && e.keyCode === 'U'.charCodeAt(0))
+            )
+              return false;
+            };
+        });
+
+        loadTiles(currentPage);
+		</script>
+</body>
+</html>
